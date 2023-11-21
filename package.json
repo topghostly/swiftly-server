@@ -1,0 +1,22 @@
+{
+  "name": "swiftly-server",
+  "version": "1.0.0",
+  "description": "Backend server for Swifty payment app, facilitating swift and secure payment processing.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/topghostly/swiftly-server.git"
+  },
+  "author": "tecttitans",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/topghostly/swiftly-server/issues"
+  },
+  "homepage": "https://github.com/topghostly/swiftly-server#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
