@@ -1,3 +1,5 @@
+const User = require("../models/userModel");
+
 const loginController = (req, res) => {
   const loginInfo = req.body ? req.body : null;
 
@@ -25,12 +27,12 @@ const loginController = (req, res) => {
     return res.status(500).json({
       status: "failed",
       error: "INTERNAL_SERVER_ERROR",
-      message: " An unexpected condition was encountered on the server ",
+      message: " An unexpected problem was encountered on the server ",
     });
   }
 };
 
-const registrationController = (req, res) => {
+const registrationController = async (req, res) => {
   const registrationInfo = req.body ? req.body : null;
 
   if (!registrationInfo) {
@@ -45,11 +47,10 @@ const registrationController = (req, res) => {
   }
   try {
     const { username, password, usermail } = registrationInfo;
+    const responce = await User.create({ username, usermail, password });
 
     return res.status(200).json({
-      username,
-      usermail,
-      password,
+      responce,
     });
   } catch {
     res.setHeader("Content-Type", "application/json");
@@ -58,7 +59,7 @@ const registrationController = (req, res) => {
     return res.status(500).json({
       status: "failed",
       error: "INTERNAL_SERVER_ERROR",
-      message: " An unexpected condition was encountered on the server ",
+      message: " An unexpected problem was encountered on the server ",
     });
   }
 };
