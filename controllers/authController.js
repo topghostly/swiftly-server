@@ -1,8 +1,5 @@
 const loginController = (req, res) => {
-  console.log(req.body);
   const loginInfo = req.body ? req.body : null;
-
-  console.log(loginInfo);
 
   if (!loginInfo) {
     res.setHeader("Content-Type", "application/json");
@@ -11,7 +8,7 @@ const loginController = (req, res) => {
     return res.status(400).json({
       status: "failed",
       error: "INVALID_LOGIN_DETAILS",
-      message: " Input login details 1 ",
+      message: " Recheck the login details ",
     });
   }
   try {
@@ -25,12 +22,45 @@ const loginController = (req, res) => {
     res.setHeader("Content-Type", "application/json");
     res.set("Cache-Control", "no-cache");
 
-    return res.status(400).json({
+    return res.status(500).json({
       status: "failed",
-      error: "INVALID_LOGIN_DETAILS",
-      message: " Input login details 2 ",
+      error: "INTERNAL_SERVER_ERROR",
+      message: " An unexpected condition was encountered on the server ",
     });
   }
 };
 
-module.exports = { loginController };
+const registrationController = (req, res) => {
+  const registrationInfo = req.body ? req.body : null;
+
+  if (!registrationInfo) {
+    res.setHeader("Content-Type", "application/json");
+    res.set("Cache-Control", "no-cache");
+
+    return res.status(400).json({
+      status: "failed",
+      error: "INVALID_REGISTRATION_DETAILS",
+      message: " Recheck the registration details ",
+    });
+  }
+  try {
+    const { username, password, usermail } = registrationInfo;
+
+    return res.status(200).json({
+      username,
+      usermail,
+      password,
+    });
+  } catch {
+    res.setHeader("Content-Type", "application/json");
+    res.set("Cache-Control", "no-cache");
+
+    return res.status(500).json({
+      status: "failed",
+      error: "INTERNAL_SERVER_ERROR",
+      message: " An unexpected condition was encountered on the server ",
+    });
+  }
+};
+
+module.exports = { loginController, registrationController };
