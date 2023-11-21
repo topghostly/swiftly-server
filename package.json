@@ -2,9 +2,10 @@
   "name": "swiftly-server",
   "version": "1.0.0",
   "description": "Backend server for Swifty payment app, facilitating swift and secure payment processing.",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon server"
   },
   "repository": {
     "type": "git",
