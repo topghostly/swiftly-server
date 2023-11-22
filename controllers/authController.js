@@ -73,7 +73,6 @@ const loginController = async (req, res) => {
         error: "INVALID_USER",
         message: " User does not exist ",
       });
-      2;
     }
   } catch {
     res.setHeader("Content-Type", "application/json");
