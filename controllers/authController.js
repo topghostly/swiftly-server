@@ -1,4 +1,5 @@
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 
 const loginController = async (req, res) => {
@@ -23,15 +24,35 @@ const loginController = async (req, res) => {
         if (err) {
           console.log(err);
         }
-        if (result) {
-          res.setHeader("Content-Type", "application/json");
-          res.set("Cache-Control", "no-cache");
 
-          return res.status(200).json({
-            status: "success",
-            message: " Login successful ",
-            data: user,
-          });
+        if (result) {
+          try {
+            // Generate session token for user
+            const sessionToken = jwt.sign(
+              { name: user },
+              process.env.JWT_ENCRYPTION_PHRASE,
+              { expiresIn: "1hr" }
+            );
+
+            res.setHeader("Content-Type", "application/json");
+            res.set("Cache-Control", "no-cache");
+
+            return res.status(200).json({
+              status: "success",
+              message: " Login successful ",
+              sessionToken,
+              data: user,
+            });
+          } catch (error) {
+            res.setHeader("Content-Type", "application/json");
+            res.set("Cache-Control", "no-cache");
+
+            return res.status(200).json({
+              status: "failed",
+              error: "LOGIN_ERROR",
+              message: " An error occured while logging in ",
+            });
+          }
         } else {
           res.setHeader("Content-Type", "application/json");
           res.set("Cache-Control", "no-cache");
