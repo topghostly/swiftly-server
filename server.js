@@ -1,7 +1,9 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const cors = require("cors");
 require("dotenv").config();
+
 const mainRoute = require("./routes/mainRoutes");
 const authRoutes = require("./routes/authRoutes");
 
@@ -20,6 +22,12 @@ mongoose
     console.log(err);
   });
 
+app.use(cors());
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/v1/auth", authRoutes);
 app.use("/", mainRoute);
+
+// app.listen("1234", () => {
+//   console.log("Listening on the port blah blah blah...");
+// });
