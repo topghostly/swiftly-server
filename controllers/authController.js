@@ -1,6 +1,8 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
+const Otp = require("../models/otpModels");
+const handleOtp = require("../utlls/handleOTP");
 
 const loginController = async (req, res) => {
   const loginInfo = req.body ? req.body : null;
@@ -20,19 +22,14 @@ const loginController = async (req, res) => {
     const user = await User.findOne({ usermail: loginMail });
 
     if (user) {
-      bcrypt.compare(loginPassword, user.password, function (err, result) {
+      bcrypt.compare(loginPassword, user.password, async (err, result) => {
         if (err) {
           console.log(err);
         }
 
         if (result) {
           try {
-            // Generate session token for user
-            const sessionToken = jwt.sign(
-              { name: user },
-              process.env.JWT_ENCRYPTION_PHRASE,
-              { expiresIn: "1hr" }
-            );
+            await handleOtp(user.usermail);
 
             res.setHeader("Content-Type", "application/json");
             res.set("Cache-Control", "no-cache");
@@ -40,7 +37,6 @@ const loginController = async (req, res) => {
             return res.status(200).json({
               status: "success",
               message: " Login successful ",
-              sessionToken,
               data: user,
             });
           } catch (error) {
@@ -144,4 +140,73 @@ const registrationController = async (req, res) => {
   }
 };
 
-module.exports = { loginController, registrationController };
+const verifyOtp = async (req, res) => {
+  const { usermail, otp } = req.query;
+  try {
+    const verifiedOtp = await Otp.findOne({ usermail });
+
+    if (!verifiedOtp) {
+      res.setHeader("Content-Type", "application/json");
+      res.set("Cache-Control", "no-cache");
+
+      return res.status(500).json({
+        status: "failed",
+        error: "INVALID_OTP_KEY",
+        message: " Expired otp key ",
+      });
+    }
+
+    const verifiedOtpKey = verifiedOtp.otp;
+
+    if (verifiedOtpKey === otp) {
+      try {
+        const userDetails = await User.findOne({ usermail });
+        // Generate session token for user
+        const sessionToken = jwt.sign(
+          { name: userDetails },
+          process.env.JWT_ENCRYPTION_PHRASE,
+          { expiresIn: "1hr" }
+        );
+
+        res.setHeader("Content-Type", "application/json");
+        res.set("Cache-Control", "no-cache");
+
+        return res.status(200).json({
+          status: "success",
+          message: " Login successful ",
+          sessionToken,
+          data: userDetails,
+        });
+      } catch (error) {
+        res.setHeader("Content-Type", "application/json");
+        res.set("Cache-Control", "no-cache");
+
+        return res.status(500).json({
+          status: "failed",
+          error: "LOGIN_ERROR",
+          message: " An error occured while logging in ",
+        });
+      }
+    } else {
+      res.setHeader("Content-Type", "application/json");
+      res.set("Cache-Control", "no-cache");
+
+      return res.status(500).json({
+        status: "failed",
+        error: "INVALID_OTP_KEY",
+        message: " Invalid otp key ",
+      });
+    }
+  } catch (error) {
+    res.setHeader("Content-Type", "application/json");
+    res.set("Cache-Control", "no-cache");
+
+    return res.status(500).json({
+      status: "failed",
+      error: "INTERNAL_SERVER_ERROR",
+      message: " An unexpected problem was encountered on the server ",
+    });
+  }
+};
+
+module.exports = { loginController, registrationController, verifyOtp };
