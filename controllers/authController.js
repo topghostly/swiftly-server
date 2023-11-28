@@ -36,7 +36,7 @@ const loginController = async (req, res) => {
 
             return res.status(200).json({
               status: "success",
-              message: " Login successful ",
+              message: "User details found",
               data: user,
             });
           } catch (error) {
@@ -96,9 +96,17 @@ const registrationController = async (req, res) => {
     });
   }
   try {
-    const { username, password, usermail, businessName } = registrationInfo;
+    const {
+      firstName,
+      lastName,
+      password,
+      email,
+      businessName,
+      CAC,
+      businessType,
+    } = registrationInfo;
 
-    const existingUsermail = await User.findOne({ usermail });
+    const existingUsermail = await User.findOne({ usermail: email });
 
     if (existingUsermail) {
       console.log("The exising user is", existingUsermail);
@@ -114,11 +122,16 @@ const registrationController = async (req, res) => {
 
     bcrypt.hash(password, 10, async function (err, hashedPassword) {
       const responce = await User.create({
-        username,
-        usermail,
+        firstName,
+        lastName,
+        usermail: email,
+        CAC,
+        businessType,
         password: hashedPassword,
         businessName,
       });
+
+      await handleOtp(email);
       res.setHeader("Content-Type", "application/json");
       res.set("Cache-Control", "no-cache");
 
@@ -136,6 +149,65 @@ const registrationController = async (req, res) => {
       status: "failed",
       error: "INTERNAL_SERVER_ERROR",
       message: " An unexpected problem was encountered on the server ",
+    });
+  }
+};
+
+const getOtp = async (req, res) => {
+  const { usermail } = req.query;
+
+  if (!usermail) {
+    res.setHeader("Content-Type", "application/json");
+    res.set("Cache-Control", "no-cache");
+
+    return res.status(500).json({
+      status: "failed",
+      error: "NO_MAIL_ADDRESS",
+      message: " No or invalid email address inputted ",
+    });
+  }
+  try {
+    const existingUsermail = await User.findOne({ usermail });
+
+    if (existingUsermail) {
+      try {
+        await handleOtp(usermail);
+        res.setHeader("Content-Type", "application/json");
+        res.set("Cache-Control", "no-cache");
+
+        return res.status(500).json({
+          status: "success",
+          message: " otp code sent sucessfully ",
+        });
+      } catch (error) {
+        res.setHeader("Content-Type", "application/json");
+        res.set("Cache-Control", "no-cache");
+
+        return res.status(500).json({
+          status: "failed",
+          error: "INTERNAL_SERVER_ERROR",
+          message: " An unexpected problem was encountered on the server ",
+        });
+      }
+    } else {
+      res.setHeader("Content-Type", "application/json");
+      res.set("Cache-Control", "no-cache");
+
+      return res.status(500).json({
+        status: "failed",
+        error: "MAIL_NOT_FOUND",
+        message: " mail does not exist ",
+      });
+    }
+    await handleOtp(usermail);
+  } catch (error) {
+    res.setHeader("Content-Type", "application/json");
+    res.set("Cache-Control", "no-cache");
+
+    return res.status(500).json({
+      status: "failed",
+      error: "INTERNAL_SERVER_ERROR",
+      message: " An unexpected problem was encountered on the server3 ",
     });
   }
 };
@@ -167,7 +239,6 @@ const verifyOtp = async (req, res) => {
           process.env.JWT_ENCRYPTION_PHRASE,
           { expiresIn: "1hr" }
         );
-
         res.setHeader("Content-Type", "application/json");
         res.set("Cache-Control", "no-cache");
 
@@ -209,4 +280,4 @@ const verifyOtp = async (req, res) => {
   }
 };
 
-module.exports = { loginController, registrationController, verifyOtp };
+module.exports = { loginController, registrationController, getOtp, verifyOtp };

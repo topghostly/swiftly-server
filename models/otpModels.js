@@ -15,7 +15,7 @@ const otpSchema = new Schema(
     createdAt: {
       type: Date,
       default: Date.now,
-      expires: 300,
+      expires: 600,
     },
   },
   { timestamps: true }

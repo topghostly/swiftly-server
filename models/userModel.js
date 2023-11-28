@@ -2,9 +2,13 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema(
+const userDetailSchema = new Schema(
   {
-    username: {
+    firstName: {
+      type: String,
+      required: true,
+    },
+    lastName: {
       type: String,
       required: true,
     },
@@ -21,10 +25,18 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    CAC: {
+      type: String,
+      required: true,
+    },
+    businessType: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );
 
-const User = mongoose.model("User", userSchema);
+const UserDetail = mongoose.model("UserDetail", userDetailSchema);
 
-module.exports = User;
+module.exports = UserDetail;
