@@ -167,39 +167,46 @@ const getOtp = async (req, res) => {
     });
   }
   try {
-    const existingUsermail = await User.findOne({ usermail });
+    // const existingUsermail = await User.findOne({ usermail });
 
-    if (existingUsermail) {
-      try {
-        await handleOtp(usermail);
-        res.setHeader("Content-Type", "application/json");
-        res.set("Cache-Control", "no-cache");
+    // if (existingUsermail) {
+    //   try {
+    //     await handleOtp(usermail);
+    //     res.setHeader("Content-Type", "application/json");
+    //     res.set("Cache-Control", "no-cache");
 
-        return res.status(500).json({
-          status: "success",
-          message: " otp code sent sucessfully ",
-        });
-      } catch (error) {
-        res.setHeader("Content-Type", "application/json");
-        res.set("Cache-Control", "no-cache");
+    //     return res.status(500).json({
+    //       status: "success",
+    //       message: " otp code sent sucessfully ",
+    //     });
+    //   } catch (error) {
+    //     res.setHeader("Content-Type", "application/json");
+    //     res.set("Cache-Control", "no-cache");
 
-        return res.status(500).json({
-          status: "failed",
-          error: "INTERNAL_SERVER_ERROR",
-          message: " An unexpected problem was encountered on the server ",
-        });
-      }
-    } else {
-      res.setHeader("Content-Type", "application/json");
-      res.set("Cache-Control", "no-cache");
+    //     return res.status(500).json({
+    //       status: "failed",
+    //       error: "INTERNAL_SERVER_ERROR",
+    //       message: " An unexpected problem was encountered on the server ",
+    //     });
+    //   }
+    // } else {
+    //   res.setHeader("Content-Type", "application/json");
+    //   res.set("Cache-Control", "no-cache");
 
-      return res.status(500).json({
-        status: "failed",
-        error: "MAIL_NOT_FOUND",
-        message: " mail does not exist ",
-      });
-    }
+    //   return res.status(500).json({
+    //     status: "failed",
+    //     error: "MAIL_NOT_FOUND",
+    //     message: " mail does not exist ",
+    //   });
+    // }
     await handleOtp(usermail);
+    res.setHeader("Content-Type", "application/json");
+    res.set("Cache-Control", "no-cache");
+
+    return res.status(500).json({
+      status: "success",
+      message: " otp code sent sucessfully ",
+    });
   } catch (error) {
     res.setHeader("Content-Type", "application/json");
     res.set("Cache-Control", "no-cache");
