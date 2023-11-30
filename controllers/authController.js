@@ -128,7 +128,7 @@ const registrationController = async (req, res) => {
         CAC,
         businessType,
         password: hashedPassword,
-        businessName,
+        country,
       });
 
       await handleOtp(email);

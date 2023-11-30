@@ -21,15 +21,13 @@ const userDetailSchema = new Schema(
       type: String,
       require: true,
     },
-    businessName: {
+    businessType: {
       type: String,
-      required: true,
     },
     CAC: {
       type: String,
-      required: true,
     },
-    businessType: {
+    country: {
       type: String,
       required: true,
     },
