@@ -240,6 +240,7 @@ const verifyOtp = async (req, res) => {
     if (verifiedOtpKey === otp) {
       try {
         const userDetails = await User.findOne({ usermail });
+
         // Generate session token for user
         const sessionToken = jwt.sign(
           { name: userDetails },
