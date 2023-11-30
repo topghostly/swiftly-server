@@ -29,7 +29,11 @@ const loginController = async (req, res) => {
 
         if (result) {
           try {
-            await handleOtp(user.usermail);
+            const sessionToken = jwt.sign(
+              { name: user },
+              process.env.JWT_ENCRYPTION_PHRASE,
+              { expiresIn: "1hr" }
+            );
 
             res.setHeader("Content-Type", "application/json");
             res.set("Cache-Control", "no-cache");
@@ -38,6 +42,7 @@ const loginController = async (req, res) => {
               status: "success",
               message: "User details found",
               data: user,
+              sessionToken,
             });
           } catch (error) {
             res.setHeader("Content-Type", "application/json");
@@ -233,20 +238,12 @@ const verifyOtp = async (req, res) => {
     if (verifiedOtpKey === otp) {
       try {
         const userDetails = await User.findOne({ usermail });
-
-        // Generate session token for user
-        const sessionToken = jwt.sign(
-          { name: userDetails },
-          process.env.JWT_ENCRYPTION_PHRASE,
-          { expiresIn: "1hr" }
-        );
         res.setHeader("Content-Type", "application/json");
         res.set("Cache-Control", "no-cache");
 
         return res.status(200).json({
           status: "success",
           message: " Login successful ",
-          sessionToken,
           data: userDetails,
         });
       } catch (error) {
