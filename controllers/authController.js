@@ -203,7 +203,7 @@ const getOtp = async (req, res) => {
     res.setHeader("Content-Type", "application/json");
     res.set("Cache-Control", "no-cache");
 
-    return res.status(500).json({
+    return res.status(200).json({
       status: "success",
       message: " otp code sent sucessfully ",
     });
