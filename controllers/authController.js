@@ -96,15 +96,8 @@ const registrationController = async (req, res) => {
     });
   }
   try {
-    const {
-      firstName,
-      lastName,
-      password,
-      email,
-      businessName,
-      CAC,
-      businessType,
-    } = registrationInfo;
+    const { firstName, lastName, password, email, country, CAC, businessType } =
+      registrationInfo;
 
     const existingUsermail = await User.findOne({ usermail: email });
 
