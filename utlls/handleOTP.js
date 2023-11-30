@@ -12,6 +12,7 @@ const generateOTP = async (userMail) => {
     console.log("Error verifying OTP", error);
   }
   const OTP = Math.floor(100000 + Math.random() * 900000).toString();
+  console.log("Otp is", OTP);
   try {
     const otpResponse = await Otp.create({
       usermail: userMail,
@@ -54,7 +55,7 @@ const sendOTP = async (userMail) => {
 
   if (!OTP) {
     console.log("Wn error occured while generating the OTP");
-    return mull;
+    return mul;
   }
 
   const mailConfig = nodemailer.createTransport({
